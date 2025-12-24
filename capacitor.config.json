@@ -1,0 +1,6 @@
+{
+  "appId": "com.papyloagentbot.app",
+  "appName": "PapyloAgentBot",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
