@@ -1,0 +1,39 @@
+workflows:
+  android-release:
+    name: Android Release
+    environment:
+      vars:
+        KEYSTORE_BASE64:
+          secure: ENV
+        KEYSTORE_PASSWORD:
+          secure: ENV
+        KEY_ALIAS:
+          secure: ENV
+        KEY_PASSWORD:
+          secure: ENV
+    scripts:
+      - name: Restore keystore
+        script: |
+          mkdir -p android
+          echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+
+      - name: Create keystore properties
+        script: |
+          cat > android/keystore.properties <<EOF
+          storeFile=keystore.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Build signed release
+        script: |
+          cd android
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=keystore.jks \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+    artifacts:
+      - android/app/build/outputs/apk/release/*.apk
