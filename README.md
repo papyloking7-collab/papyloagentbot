@@ -59,3 +59,33 @@ cd android
 ```
 
 If you want, I can attempt to run `npm install` and `npx cap add android` here — note that building the APK requires Android SDK and is not available in the dev container by default.
+
+Generating a keystore and signing APKs
+
+Do not commit your keystore to the repository. The repo `.gitignore` ignores `*.jks`.
+
+Scripts are provided in `scripts/`:
+
+- `scripts/generate-keystore.sh` — generates a JKS keystore. Example:
+
+```bash
+KEYSTORE_PATH=android/keystore.jks \ 
+KEYSTORE_PASSWORD=changeit \ 
+KEY_ALIAS=releasekey \ 
+KEY_PASSWORD=changeit \ 
+DN="CN=Your Name, OU=Dev, O=Org, L=City, ST=State, C=US" \
+	./scripts/generate-keystore.sh
+```
+
+- `scripts/sign-and-align.sh` — sign an unsigned APK and align it. Example:
+
+```bash
+ANDROID_SDK_ROOT=$HOME/Android/Sdk \
+KEYSTORE_PATH=android/keystore.jks \
+KEYSTORE_PASSWORD=changeit \
+KEY_ALIAS=releasekey \
+KEY_PASSWORD=changeit \
+	./scripts/sign-and-align.sh android/app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+These scripts use `keytool`, `jarsigner`, and `zipalign` from the Android SDK build-tools. Ensure `ANDROID_SDK_ROOT` is set or the SDK is discoverable.
