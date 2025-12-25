@@ -3,28 +3,15 @@ workflows:
     name: Android Release
     environment:
       vars:
-        KEYSTORE_BASE64:
-          value: ""
-          secure: true
-        KEYSTORE_PASSWORD:
-          value: ""
-          secure: true
-        KEY_ALIAS:
-          value: ""
-          secure: true
-        KEY_PASSWORD:
-          value: ""
-          secure: true
+        KEYSTORE_BASE64: $KEYSTORE_BASE64
+        KEYSTORE_PASSWORD: $KEYSTORE_PASSWORD
+        KEY_ALIAS: $KEY_ALIAS
+        KEY_PASSWORD: $KEY_PASSWORD
     scripts:
       - name: Restore keystore
         script: |
           mkdir -p android
           echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
-
-      - name: Create keystore properties
-        script: |
-          printf "storeFile=keystore.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" \
-            "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
 
       - name: Build signed release
         script: |
