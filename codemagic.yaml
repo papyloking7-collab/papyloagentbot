@@ -4,13 +4,17 @@ workflows:
     environment:
       vars:
         KEYSTORE_BASE64:
-          secure: ENV
+          value: ""
+          secure: true
         KEYSTORE_PASSWORD:
-          secure: ENV
+          value: ""
+          secure: true
         KEY_ALIAS:
-          secure: ENV
+          value: ""
+          secure: true
         KEY_PASSWORD:
-          secure: ENV
+          value: ""
+          secure: true
     scripts:
       - name: Restore keystore
         script: |
@@ -19,12 +23,8 @@ workflows:
 
       - name: Create keystore properties
         script: |
-          cat > android/keystore.properties <<EOF
-          storeFile=keystore.jks
-          storePassword=$KEYSTORE_PASSWORD
-          keyAlias=$KEY_ALIAS
-          keyPassword=$KEY_PASSWORD
-          EOF
+          printf "storeFile=keystore.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" \
+            "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
 
       - name: Build signed release
         script: |
